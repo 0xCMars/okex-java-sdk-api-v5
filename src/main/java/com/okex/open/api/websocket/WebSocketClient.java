@@ -29,14 +29,21 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import java.util.*;
+
+import com.okex.open.api.websocket.WebSocketListener;
+import com.okex.open.api.websocket.WebSocketClientHandler;
 
 public class WebSocketClient implements WebSocket {
     private final static HashFunction crc32 = Hashing.crc32();
     private Channel ch;
     private WebSocketListener listener;
-    private String URL = "wss://okexcomreal.bafang.com:8443/ws/v3";
+    private String URL = "wss://ws.okx.com:8443/ws/v5/private";
     private Timer timer = new HashedWheelTimer(Executors.defaultThreadFactory());
 
     public WebSocketClient(WebSocketListener listener) {
@@ -114,7 +121,7 @@ public class WebSocketClient implements WebSocket {
 
     @Override
     public void login(String apiKey, String apiSecret, String passphrase) {
-
+        // timestamp
         String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
         String str = timeStamp + "GET/users/self/verify";
         String hash = "";
@@ -128,21 +135,32 @@ public class WebSocketClient implements WebSocket {
             t.printStackTrace();
             this.listener.handleCallbackError(this,t);
         }
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"args\":[\"" + apiKey + "\",\"" + passphrase + "\",\""  + timeStamp + "\",\""   +  hash + "\"],\"op\":\"login\"}");
-        this.send(builder.toString());
+        ArrayList<Map> argsList= new ArrayList<>();
+        Map argsMap =new HashMap();
+
+        argsMap.put("apiKey", apiKey);
+        argsMap.put("passphrase", passphrase);
+        argsMap.put("timestamp", timeStamp);
+        argsMap.put("sign", hash);
+        argsList.add(argsMap);
+        String args = formatArgs(argsList);
+        this.send("{\"op\": \"login\", \"args\":" + args + "}");
     }
 
     @Override
-    public void subscribe(String... args) {
-        String channels = formatArgs(args);
-        this.send("{\"args\":[\"" + channels + "\"],\"op\":\"subscribe\"}");
+    public void subscribe(String args) {
+//        String channels = formatArgs(list);
+//        System.out.println(channels);
+//        this.send("{\"args\":[\"" + channels + "\"],\"op\":\"subscribe\"}");
+        this.send("{\"op\": \"subscribe\", \"args\":" + args + "}");
     }
 
     @Override
-    public void unSubscribe(String... args) {
-        String channels = formatArgs(args);
-        this.send("{\"args\":[\"" + channels + "\"],\"op\":\"unsubscribe\"}");
+    public void unSubscribe(String args) {
+//        String channels = formatArgs(list);
+//        this.send("{\"args\":[\"" + channels + "\"],\"op\":\"unsubscribe\"}");
+        this.send("{\"op\": \"unsubscribe\", \"args\":" + args + "}");
+
     }
 
     @Override
@@ -178,7 +196,6 @@ public class WebSocketClient implements WebSocket {
                         targetStr.append(bidsObject.get(num));
                         targetStr.append(":");
                     }
-
                 }
                 if (asksArray != null && index < asksArray.size()) {
                     JSONArray asksObject = (JSONArray)asksArray.get(index);
@@ -209,19 +226,12 @@ public class WebSocketClient implements WebSocket {
         ch.writeAndFlush(frame);
     }
 
-    private String formatArgs(String... args) {
-        StringBuilder builder = new StringBuilder();
-        int count = 0;
-        for (String str : args) {
-            if (str.isEmpty()) {
-                continue;
-            }
-            builder.append(str);
-            if (args.length > 1 && ++count < args.length) {
-                builder.append("\",\"");
-            }
+    private String formatArgs(List<Map> list) {
+        JSONArray jsonArray = new JSONArray();
+        for (Map map : list) {
+            jsonArray.add(net.sf.json.JSONObject.fromObject(map));
         }
-        return builder.toString();
+        return jsonArray.toJSONString();
     }
 
     public void beginTimer(){
