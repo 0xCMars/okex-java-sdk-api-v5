@@ -30,10 +30,25 @@ public class AccountAPIServiceImpl implements AccountAPIService {
         return this.client.executeSync(this.api.getBalance(ccy));
     }
 
+    @Override
+    public JSONObject getBalance() {
+        return this.client.executeSync(this.api.getBalance());
+    }
+
     //查看持仓信息 Get Positions
     @Override
     public JSONObject getPositions(String instType, String instId,String posId) {
         return this.client.executeSync(this.api.getPositions(instType,instId,posId));
+    }
+
+    @Override
+    public JSONObject getPositionsHistory(String instType,String instId,String mgnMode, String type, String posId, String after, String before, String limit) {
+        return this.client.executeSync(this.api.getPositionsHistory(instType, instId, mgnMode, type, posId, after, before, limit));
+    }
+
+    @Override
+    public JSONObject getAccountPositionRisk(String instType) {
+        return this.client.executeSync(this.api.getAccountPositionRisk(instType));
     }
 
     //账单流水查询（近七天） Get Bills Details (last 7 days)
@@ -57,6 +72,8 @@ public class AccountAPIServiceImpl implements AccountAPIService {
     //设置持仓模式 Set Position mode
     @Override
     public JSONObject setPositionMode(SetPositionMode setPositionMode) {
+        System.out.println("response-------------------------"+JSONObject.parseObject(JSON.toJSONString(setPositionMode)));
+
         return this.client.executeSync(this.api.setPositionMode(JSONObject.parseObject(JSON.toJSONString(setPositionMode))));
     }
 

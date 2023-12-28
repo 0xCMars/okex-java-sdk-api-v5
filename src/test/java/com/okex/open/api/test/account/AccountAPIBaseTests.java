@@ -20,9 +20,9 @@ public class AccountAPIBaseTests extends BaseTests {
         // apiKey，api注册成功后页面上有
 
 
-        config.setApiKey("****");
-        config.setSecretKey("***");
-        config.setPassphrase("***");
+        config.setApiKey("62bc24ef-7936-493e-bcab-2baa6d6564d7");
+        config.setSecretKey("C3CB4976543584964EF5A4855FEB0F25");
+        config.setPassphrase("Account98..");
 
 
         config.setPrint(true);

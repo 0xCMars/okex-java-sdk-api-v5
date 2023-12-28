@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import retrofit2.http.GET;
 
 public class AccountAPITests extends  AccountAPIBaseTests {
 
@@ -31,14 +32,25 @@ public class AccountAPITests extends  AccountAPIBaseTests {
         toResultString(LOG, "result", result);
     }
 
+    /**
+     *  查看账户余额 Get Balance
+     *  GET /api/v5/account/balance
+     *  doc：https://www.okx.com/docs-v5/en/#trading-account-rest-api-get-balance
+     */
+    @Test
+    public void getAccountBalance() {
+        JSONObject result = this.accountAPIService.getBalance();
+        toResultString(LOG, "result", result);
+    }
 
     /**
-     * 查看账户余额 Get Balance
-     * GET /api/v5/account/balance
+     * 查看账户特定crypto余额 Get Balance
+     * GET /api/v5/account/balance？ccy=xxx
+     * doc：https://www.okx.com/docs-v5/en/#trading-account-rest-api-get-balance
      */
     @Test
     public void getBalance(){
-        JSONObject result = this.accountAPIService.getBalance("USDT");
+        JSONObject result = this.accountAPIService.getBalance("WBTC");
         toResultString(LOG, "result", result);
     }
 
@@ -46,13 +58,35 @@ public class AccountAPITests extends  AccountAPIBaseTests {
     /**
      * 查看持仓信息 Get Positions
      * GET /api/v5/account/positions
+     * doc https://www.okx.com/docs-v5/en/#trading-account-rest-api-get-positions
      */
     @Test
     public void getPositions(){
-        JSONObject result = this.accountAPIService.getPositions("MARGIN",null,null);
+        JSONObject result = this.accountAPIService.getPositions("MARGIN","BTC-USDT",null);
         toResultString(LOG, "result", result);
     }
 
+    /**
+     * 查看历史持仓信息 Get Positions
+     * GET /api/v5/account/positions-history
+     * doc https://www.okx.com/docs-v5/en/#trading-account-rest-api-get-positions
+     */
+    @Test
+    public void getPositionsHistory() {
+        JSONObject result = this.accountAPIService.getPositionsHistory(null, null, null, null, null, null, null, null);
+        toResultString(LOG, "result", result);
+    }
+
+    /**
+     * Get account and position risk
+     * GET /api/v5/account/account-position-risk
+     * doc https://www.okx.com/docs-v5/en/#trading-account-rest-api-get-account-and-position-risk
+     */
+    @Test
+    public void getAccountPositionRisk() {
+        JSONObject result = this.accountAPIService.getAccountPositionRisk("MARGIN");
+        toResultString(LOG, "result", result);
+    }
 
     /**
      * 账单流水查询（近七天） Get Bills Details (last 7 days)
@@ -60,10 +94,9 @@ public class AccountAPITests extends  AccountAPIBaseTests {
      */
     @Test
     public void getBillsDetails7Days(){
-        JSONObject result = this.accountAPIService.getBillsDetails7Days("FUTERES","","","","","","","","");
+        JSONObject result = this.accountAPIService.getBillsDetails7Days("FUTURES","","","","","","","","");
         toResultString(LOG, "result", result);
     }
-
 
     /**
      * 账单流水查询（近三个月） Get Bills Details (last 3 months)
@@ -90,6 +123,8 @@ public class AccountAPITests extends  AccountAPIBaseTests {
     /**
      * 设置持仓模式 Set Position mode
      * POST  /api/v5/account/set-position-mode
+     * FUTURES and SWAP only support net mode
+     * TODO 308
      */
     @Test
     public void setPositionMode(){
@@ -107,11 +142,11 @@ public class AccountAPITests extends  AccountAPIBaseTests {
     @Test
     public void setLeverage(){
         SetLeverage setLeverage=new SetLeverage();
-        setLeverage.setInstId("BTC-USDT-SWAP");
+        setLeverage.setInstId("BTC-USDT");
 //        setLeverage.setCcy("");
-        setLeverage.setLever("13.3");
+        setLeverage.setLever("5");
         setLeverage.setMgnMode("cross");
-        setLeverage.setPosSide("net");
+        setLeverage.setPosSide("long");
 
         JSONObject result = this.accountAPIService.setLeverage(setLeverage);
         toResultString(LOG, "result", result);

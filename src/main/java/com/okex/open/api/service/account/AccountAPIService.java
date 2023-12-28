@@ -10,11 +10,20 @@ public interface AccountAPIService {
     //查看账户持仓风险 Get account and position risk
     JSONObject getAccountAndPosition(String instType);
 
+    // Get the balance of all assets in the account
+    JSONObject getBalance();
+
     //查看账户余额 Get Balance
     JSONObject getBalance(String ccy);
 
     //查看持仓信息 Get Positions
     JSONObject getPositions(String instType,String instId,String posId);
+
+    // Retrieve the updated position data for the last 3 months.
+    // Getting positions history is not supported under Portfolio margin mode.
+    JSONObject getPositionsHistory(String instType,String instId,String mgnMode, String type, String posId, String after, String before, String limit);
+
+    JSONObject getAccountPositionRisk(String instType);
 
     //账单流水查询（近七天） Get Bills Details (last 7 days)
     JSONObject getBillsDetails7Days(String instType,String ccy,String mgnMode,String ctType,String type,String subType,String after,String before,String limit);

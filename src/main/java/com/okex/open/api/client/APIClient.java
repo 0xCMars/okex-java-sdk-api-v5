@@ -65,7 +65,7 @@ public class APIClient {
         try {
 
             final Response<T> response = call.execute();
-//            System.out.println("response-------------------------"+call.toString());
+            System.out.println("response-------------------------"+response.toString());
             //是否打印config配置信息
             if (this.config.isPrint()) {
                 //打印响应信息

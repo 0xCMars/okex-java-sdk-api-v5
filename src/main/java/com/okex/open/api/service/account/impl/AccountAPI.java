@@ -11,6 +11,8 @@ public interface AccountAPI {
     @GET("/api/v5/account/account-position-risk")
     Call<JSONObject> getAccountAndPosition(@Query("instType") String instType);
 
+    @GET("/api/v5/account/balance")
+    Call<JSONObject> getBalance();
 
     //查看账户余额 Get Balance
     @GET("/api/v5/account/balance")
@@ -20,6 +22,20 @@ public interface AccountAPI {
     //查看持仓信息 Get Positions
     @GET("/api/v5/account/positions")
     Call<JSONObject> getPositions(@Query("instType") String instType,@Query("instId") String instId,@Query("posId") String posId);
+
+    @GET("/api/v5/account/positions-history")
+    Call<JSONObject> getPositionsHistory(@Query("instType") String instType,
+                                         @Query("instId") String instId,
+                                         @Query("mgnMode") String mgnMode,
+                                         @Query("type") String type,
+                                         @Query("posId") String posId,
+                                         @Query("after") String after,
+                                         @Query("before") String before,
+                                         @Query("limit") String limit);
+
+    // 获取账户的Position Risk
+    @GET("/api/v5/account/account-position-risk")
+    Call<JSONObject> getAccountPositionRisk(@Query("instType") String instType);
 
     //账单流水查询（近七天） Get Bills Details (last 7 days)
     @GET("/api/v5/account/bills")
