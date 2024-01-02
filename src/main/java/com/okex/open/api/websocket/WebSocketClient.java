@@ -43,11 +43,15 @@ public class WebSocketClient implements WebSocket {
     private final static HashFunction crc32 = Hashing.crc32();
     private Channel ch;
     private WebSocketListener listener;
-    private String URL = "wss://ws.okx.com:8443/ws/v5/private";
+
+    private String URL = "wss://ws.okx.com:8443/ws/v5/public";
+
+//    private String privateUrl = "wss://ws.okx.com:8443/ws/v5/private";
     private Timer timer = new HashedWheelTimer(Executors.defaultThreadFactory());
 
     public WebSocketClient(WebSocketListener listener) {
         this.listener = listener;
+
     }
 
     public WebSocketClient(String url, WebSocketListener listener) {
@@ -96,18 +100,36 @@ public class WebSocketClient implements WebSocket {
                             p.addLast(WebSocketClientCompressionHandler.INSTANCE);
                             p.addLast(handler);
                             p.addLast(new IdleStateHandler(0, 30, 0));
-
                         }
                     });
 
-            ch = b.connect(uri.getHost(), port).sync().channel();
+            ChannelFuture cf = b.connect(host, port);
+            cf.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (!future.isSuccess()) {
+                        //重连交给后端线程执行
+                        future.channel().eventLoop().schedule(() -> {
+                            System.err.println("重连服务端...");
+                            try {
+                                connect();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }, 3000, TimeUnit.MILLISECONDS);
+                    } else {
+                        System.out.println("服务端连接成功...");
+                    }
+                }
+            });
+
+            ch = cf.sync().channel();
             handler.handshakeFuture().sync();
 
         }catch (Exception e) {
             this.listener.handleCallbackError(this, e);
         }
     }
-
 
     @Override
     public void close() {
@@ -243,6 +265,10 @@ public class WebSocketClient implements WebSocket {
             }
         };
         addTask(timerTask);
+    }
+
+    public void reconnectTask() {
+
     }
 
     private void addTask(TimerTask task){
