@@ -55,4 +55,8 @@ public interface WebSocketListener {
      * @param ws The WebSocket instance this event is occuring on.
      **/
     void onWebsocketPong(WebSocket ws);
+
+    void setSendTime(Long first);
+
+    void show();
 }

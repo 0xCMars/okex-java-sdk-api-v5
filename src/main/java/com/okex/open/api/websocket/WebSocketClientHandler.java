@@ -84,6 +84,8 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
+        System.err.println("运行中断开重连。。。");
+        webSocketClient.connect();
     }
 
     private static String uncompress(ByteBuf buf) {

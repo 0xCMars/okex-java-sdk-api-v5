@@ -41,6 +41,8 @@ import com.okex.open.api.websocket.WebSocketClientHandler;
 
 public class WebSocketClient implements WebSocket {
     private final static HashFunction crc32 = Hashing.crc32();
+
+    private static Boolean closeSig = Boolean.FALSE;
     private Channel ch;
     private WebSocketListener listener;
 
@@ -49,6 +51,7 @@ public class WebSocketClient implements WebSocket {
 //    private String privateUrl = "wss://ws.okx.com:8443/ws/v5/private";
     private Timer timer = new HashedWheelTimer(Executors.defaultThreadFactory());
 
+    private ArrayList<Long> timeLog = new ArrayList<Long>();
     public WebSocketClient(WebSocketListener listener) {
         this.listener = listener;
 
@@ -133,6 +136,7 @@ public class WebSocketClient implements WebSocket {
 
     @Override
     public void close() {
+        this.closeSig = Boolean.TRUE;
         ch.close();
     }
 
@@ -245,6 +249,10 @@ public class WebSocketClient implements WebSocket {
 
     private  void send(String msg){
         WebSocketFrame frame = new TextWebSocketFrame(msg);
+        Long first = System.currentTimeMillis();
+        this.listener.setSendTime(first);
+//        System.out.println("Send Msg: " + first);
+//        timeLog.add(first);
         ch.writeAndFlush(frame);
     }
 
