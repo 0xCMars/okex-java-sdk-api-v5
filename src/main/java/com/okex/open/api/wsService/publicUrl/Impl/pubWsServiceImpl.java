@@ -40,6 +40,14 @@ public class pubWsServiceImpl implements pubWsService {
     }
 
     @Override
+    public List<SubscribeReq> getBboTbt(String instId) {
+        List<SubscribeReq> channelList = new ArrayList<>();
+        SubscribeReq subscribeReq = new SubscribeReq(instId, "bbo-tbt");
+        channelList.add(subscribeReq);
+        return channelList;
+    }
+
+    @Override
     public String getInstrument(String instType) {
         ArrayList<Map> channelList = new ArrayList<>();
         Map<String, String> argsMap = new HashMap();

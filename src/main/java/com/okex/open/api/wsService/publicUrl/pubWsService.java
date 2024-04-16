@@ -21,6 +21,7 @@ public interface pubWsService {
     //    and books-l2-tbt for tick-by-tick 400 depth levels.
     List<SubscribeReq> getOrdBooks(String instId);
 
+    List<SubscribeReq> getBboTbt(String instId);
 
     // Public Data
     // There is more operation in this Section

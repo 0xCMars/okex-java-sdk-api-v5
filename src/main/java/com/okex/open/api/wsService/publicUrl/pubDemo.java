@@ -36,9 +36,10 @@ public class pubDemo {
                     System.out.println("error:" + json);
                 }).build();
         // ping/pong msg
-        getTickers();
+//        getTickers();
 //        getTrades();
-        getOrdBooks();
+//        getOrdBooks();
+        getBboTbt();
 //        getInstrument();
 //        getMarkPrice();
 //        getOpenInterest();
@@ -68,6 +69,12 @@ public class pubDemo {
     public static void getOrdBooks() {
         String instId = "BTC-USDT";
         List<SubscribeReq> args = wsService.getOrdBooks(instId);
+        client.subscribe(args);
+    }
+
+    public static void getBboTbt() {
+        String instId = "BTC-USDT";
+        List<SubscribeReq> args = wsService.getBboTbt(instId);
         client.subscribe(args);
     }
 //
