@@ -23,25 +23,20 @@ public class pubWsServiceImpl implements pubWsService {
     }
 
     @Override
-    public String getTrades(String instId) {
-        ArrayList<Map> channelList = new ArrayList<>();
-        Map<String, String> argsMap = new HashMap();
+    public List<SubscribeReq> getTrades(String instId) {
+        List<SubscribeReq>  channelList = new ArrayList<>();
+        SubscribeReq subscribeReq = new SubscribeReq(instId, "trades");
 
-        argsMap.put("channel","trades");
-        argsMap.put("instId", instId);
-        channelList.add(argsMap);
-        return formatArgs(channelList);
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override
-    public String getOrdBooks(String channel, String instId) {
-        ArrayList<Map> channelList = new ArrayList<>();
-        Map<String, String> argsMap = new HashMap();
-
-        argsMap.put("channel", channel);
-        argsMap.put("instId", instId);
-        channelList.add(argsMap);
-        return formatArgs(channelList);
+    public List<SubscribeReq> getOrdBooks(String instId) {
+        List<SubscribeReq> channelList = new ArrayList<>();
+        SubscribeReq subscribeReq = new SubscribeReq(instId, "books");
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override

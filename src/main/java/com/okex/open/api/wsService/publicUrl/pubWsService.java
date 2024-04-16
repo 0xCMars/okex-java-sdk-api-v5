@@ -11,7 +11,7 @@ public interface pubWsService {
     List<SubscribeReq> getTickers(String instId);
 
     // Retrieve the recent trades data. Data will be pushed whenever there is a trade.
-    String getTrades(String instId);
+    List<SubscribeReq> getTrades(String instId);
 
     // Retrieve order book data.
     //Use books for 400 depth levels,
@@ -19,7 +19,7 @@ public interface pubWsService {
     //    bbo-tbt tick-by-tick 1 depth level,
     //    books50-l2-tbt tick-by-tick 50 depth levels,
     //    and books-l2-tbt for tick-by-tick 400 depth levels.
-    String getOrdBooks(String channel, String instId);
+    List<SubscribeReq> getOrdBooks(String instId);
 
 
     // Public Data

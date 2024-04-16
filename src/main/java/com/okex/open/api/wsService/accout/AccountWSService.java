@@ -1,9 +1,13 @@
 package com.okex.open.api.wsService.accout;
 
+import com.okex.open.api.bean.SubscribeReq;
+
+import java.util.List;
+
 public interface AccountWSService {
 
     // Get the balance of all assets in the account
-    String getBalance();
+    List<SubscribeReq> getBalance();
 
     // Get the balance of one asset in the account
     String getBalance(String ccy);

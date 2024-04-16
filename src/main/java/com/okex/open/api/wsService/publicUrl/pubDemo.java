@@ -10,7 +10,6 @@ import com.okex.open.api.wsService.publicUrl.Impl.pubWsServiceImpl;
 import java.util.List;
 
 public class pubDemo {
-    private static final demoWebSocketListener demoListener = new demoWebSocketListener();
     private static String Url = "wss://wsaws.okx.com:8443/ws/v5/public";
 
     private static OkxWsClient client;
@@ -38,10 +37,9 @@ public class pubDemo {
                     System.out.println("error:" + json);
                 }).build();
         // ping/pong msg
-//        webSocketClient.beginTimer();
         getTickers();
 //        getTrades();
-//        getOrdBooks();
+        getOrdBooks();
 //        getInstrument();
 //        getMarkPrice();
 //        getOpenInterest();
@@ -62,18 +60,17 @@ public class pubDemo {
         client.subscribe(args);
     }
 
-//    public static void getTrades() {
-//        String instId = "BTC-USDT-240105";
-//        String args = wsService.getTrades(instId);
-//        webSocketClient.subscribe(args);
-//    }
-//
-//    public static void getOrdBooks() {
-//        String chan = "books";
-//        String instId = "BTC-USDT";
-//        String args = wsService.getOrdBooks(chan, instId);
-//        webSocketClient.subscribe(args);
-//    }
+    public static void getTrades() {
+        String instId = "BTC-USDT-xxxx";
+        List<SubscribeReq> args = wsService.getTrades(instId);
+        client.subscribe(args);
+    }
+
+    public static void getOrdBooks() {
+        String instId = "BTC-USDT";
+        List<SubscribeReq> args = wsService.getOrdBooks(instId);
+        client.subscribe(args);
+    }
 //
 //    public static void getInstrument() {
 //        String instType = "FUTURES";

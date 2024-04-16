@@ -1,5 +1,6 @@
 package com.okex.open.api.wsService.accout.Impl;
 import com.alibaba.fastjson.JSONArray;
+import com.okex.open.api.bean.SubscribeReq;
 import com.okex.open.api.wsService.accout.AccountWSService;
 
 import java.util.ArrayList;
@@ -10,14 +11,15 @@ import java.util.Map;
 public class AccountWSServiceImpl implements AccountWSService {
 
     @Override
-    public String getBalance() {
-        ArrayList<Map> channelList = new ArrayList<>();
-        Map<String, String> accountMap = new HashMap();
+    public List<SubscribeReq> getBalance() {
+        List<SubscribeReq> channelList = new ArrayList<>();
+//        Map<String, String> accountMap = new HashMap();
+        SubscribeReq subscribeReq = new SubscribeReq("","account");
 
-        accountMap.put("channel","account");
+//        accountMap.put("channel","account");
 
-        channelList.add(accountMap);
-        return formatArgs(channelList);
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override
