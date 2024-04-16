@@ -1,18 +1,42 @@
 package com.okex.open.api.wsService.publicUrl;
 
-import com.okex.open.api.websocket.WebSocketClient;
+import com.alibaba.fastjson.JSONObject;
+import com.okex.open.api.bean.SubscribeReq;
+import com.okex.open.api.websocket.OkxWsClient;
+import com.okex.open.api.websocket.OkxWssHandler;
 import com.okex.open.api.wsService.demoWebSocketListener;
 import com.okex.open.api.wsService.publicUrl.Impl.pubWsServiceImpl;
 
+import java.util.List;
+
 public class pubDemo {
     private static final demoWebSocketListener demoListener = new demoWebSocketListener();
-    private static String Url = "wss://ws.okx.com:8443/ws/v5/public";
-    private static final WebSocketClient webSocketClient = new WebSocketClient(Url, demoListener);
+    private static String Url = "wss://wsaws.okx.com:8443/ws/v5/public";
 
+    private static OkxWsClient client;
     private static final pubWsServiceImpl wsService = new pubWsServiceImpl();
     public static void main(String[] args) {
 
-        webSocketClient.connect();
+        Boolean isLogin = false;
+        client = OkxWssHandler.builder()
+                .pushUrl(Url)
+                .apiKey("")
+                .secretKey("")
+                .passPhrase("")
+                .isLogin(isLogin)
+                .listener(response -> {
+                    JSONObject json = JSONObject.parseObject(response);
+                    //System.out.println("def:" + json);
+                    if(isLogin){
+                        System.out.println(json);
+                    }else{
+                        System.out.println(json);
+                    }
+                    //失败消息的逻辑处理,如:订阅失败
+                }).errorListener(response -> {
+                    JSONObject json = JSONObject.parseObject(response);
+                    System.out.println("error:" + json);
+                }).build();
         // ping/pong msg
 //        webSocketClient.beginTimer();
         getTickers();
@@ -27,50 +51,48 @@ public class pubDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        demoListener.show();
-        webSocketClient.close();
         System.out.println("Demo finish");
     }
 
     public static void getTickers() {
         String instId = "FIL-USD-SWAP";
 
-        String args = wsService.getTickers(instId);
+        List<SubscribeReq> args = wsService.getTickers(instId);
 
-        webSocketClient.subscribe(args);
+        client.subscribe(args);
     }
 
-    public static void getTrades() {
-        String instId = "BTC-USDT-240105";
-        String args = wsService.getTrades(instId);
-        webSocketClient.subscribe(args);
-    }
-
-    public static void getOrdBooks() {
-        String chan = "books";
-        String instId = "BTC-USDT";
-        String args = wsService.getOrdBooks(chan, instId);
-        webSocketClient.subscribe(args);
-    }
-
-    public static void getInstrument() {
-        String instType = "FUTURES";
-        String args = wsService.getInstrument(instType);
-        webSocketClient.subscribe(args);
-    }
-
-    public static void getOpenInterest () {
-        String instId = "LTC-USD-SWAP";
-        String args = wsService.getOpenInterest(instId);
-
-        webSocketClient.subscribe(args);
-    }
-
-    public static void getMarkPrice () {
-        String instId = "BTC-USDT-240105";
-        String args = wsService.getMarkPrice(instId);
-
-        webSocketClient.subscribe(args);
-    }
+//    public static void getTrades() {
+//        String instId = "BTC-USDT-240105";
+//        String args = wsService.getTrades(instId);
+//        webSocketClient.subscribe(args);
+//    }
+//
+//    public static void getOrdBooks() {
+//        String chan = "books";
+//        String instId = "BTC-USDT";
+//        String args = wsService.getOrdBooks(chan, instId);
+//        webSocketClient.subscribe(args);
+//    }
+//
+//    public static void getInstrument() {
+//        String instType = "FUTURES";
+//        String args = wsService.getInstrument(instType);
+//        webSocketClient.subscribe(args);
+//    }
+//
+//    public static void getOpenInterest () {
+//        String instId = "LTC-USD-SWAP";
+//        String args = wsService.getOpenInterest(instId);
+//
+//        webSocketClient.subscribe(args);
+//    }
+//
+//    public static void getMarkPrice () {
+//        String instId = "BTC-USDT-240105";
+//        String args = wsService.getMarkPrice(instId);
+//
+//        webSocketClient.subscribe(args);
+//    }
 
 }

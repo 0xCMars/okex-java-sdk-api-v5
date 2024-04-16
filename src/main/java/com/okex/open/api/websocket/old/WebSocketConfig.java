@@ -1,4 +1,4 @@
-package com.okex.open.api.websocket;
+package com.okex.open.api.websocket.old;
 
 public class WebSocketConfig {
     //ws  模拟盘

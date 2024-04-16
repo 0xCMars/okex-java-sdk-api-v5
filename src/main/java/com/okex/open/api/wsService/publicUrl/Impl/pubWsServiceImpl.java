@@ -1,5 +1,6 @@
 package com.okex.open.api.wsService.publicUrl.Impl;
 import com.alibaba.fastjson.JSONArray;
+import com.okex.open.api.bean.SubscribeReq;
 import com.okex.open.api.wsService.publicUrl.pubWsService;
 
 import java.util.ArrayList;
@@ -10,14 +11,15 @@ import java.util.Map;
 public class pubWsServiceImpl implements pubWsService {
 
     @Override
-    public String getTickers(String instId) {
-        ArrayList<Map> channelList = new ArrayList<>();
-        Map<String, String> argsMap = new HashMap();
-
-        argsMap.put("channel","tickers");
-        argsMap.put("instId", instId);
-        channelList.add(argsMap);
-        return formatArgs(channelList);
+    public List<SubscribeReq> getTickers(String instId) {
+        List<SubscribeReq> channelList = new ArrayList<>();
+        SubscribeReq subscribeReq = new SubscribeReq(instId, "tickers");
+//        Map<String, String> argsMap = new HashMap();
+//
+//        argsMap.put("channel","tickers");
+//        argsMap.put("instId", instId);
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override

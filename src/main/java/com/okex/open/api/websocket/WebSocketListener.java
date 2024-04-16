@@ -13,9 +13,9 @@ public interface WebSocketListener {
      *
      * @throws Exception
      *         An exception thrown by an implementation of this method.
-     *         The exception is passed to {@link #handleCallbackError(WebSocket, Throwable)}.
+     *         The exception is passed to {@link #handleCallbackError(OkxWsClient, Throwable)}.
      */
-    void onTextMessage(WebSocket ws, String text) throws Exception;
+    void onTextMessage(OkxWsClient ws, String text) throws Exception;
 
     /**
      * Called after onHandshakeReceived returns true
@@ -24,7 +24,7 @@ public interface WebSocketListener {
      *
      * @param ws The WebSocket instance this event is occuring on.
      */
-    void onWebsocketOpen(WebSocket ws);
+    void onWebsocketOpen(OkxWsClient ws);
 
     /**
      * Called when an method threw a {@code Throwable}.
@@ -39,7 +39,7 @@ public interface WebSocketListener {
      *         The exception is just ignored.
      *
      */
-    void handleCallbackError(WebSocket websocket, Throwable cause);
+    void handleCallbackError(OkxWsClient websocket, Throwable cause);
 
     /**
      * Called after WebSocket#close is explicity called, or when the
@@ -47,14 +47,14 @@ public interface WebSocketListener {
      *
      * @param ws The WebSocket instance this event is occuring on.
      */
-    void onWebsocketClose(WebSocket ws, int code);
+    void onWebsocketClose(OkxWsClient ws, int code);
 
     /**
      * Called when a pong frame is received.
      *
      * @param ws The WebSocket instance this event is occuring on.
      **/
-    void onWebsocketPong(WebSocket ws);
+    void onWebsocketPong(OkxWsClient ws);
 
     void setSendTime(Long first);
 

@@ -1,10 +1,14 @@
 package com.okex.open.api.wsService.publicUrl;
 
+import com.okex.open.api.bean.SubscribeReq;
+
+import java.util.List;
+
 public interface pubWsService {
 
     // Market Data
     // This channel uses public WebSocket and authentication is not required.
-    String getTickers(String instId);
+    List<SubscribeReq> getTickers(String instId);
 
     // Retrieve the recent trades data. Data will be pushed whenever there is a trade.
     String getTrades(String instId);
