@@ -1,5 +1,7 @@
 package com.okex.open.api.wsService.accout.Impl;
 import com.alibaba.fastjson.JSONArray;
+import com.okex.open.api.bean.AccountReq;
+import com.okex.open.api.bean.PositionReq;
 import com.okex.open.api.bean.SubscribeReq;
 import com.okex.open.api.wsService.accout.AccountWSService;
 
@@ -14,7 +16,7 @@ public class AccountWSServiceImpl implements AccountWSService {
     public List<SubscribeReq> getBalance() {
         List<SubscribeReq> channelList = new ArrayList<>();
 //        Map<String, String> accountMap = new HashMap();
-        SubscribeReq subscribeReq = new SubscribeReq("","account");
+        AccountReq subscribeReq = new AccountReq("","account");
 
 //        accountMap.put("channel","account");
 
@@ -23,32 +25,34 @@ public class AccountWSServiceImpl implements AccountWSService {
     }
 
     @Override
-    public String getBalance(String ccy) {
-        ArrayList<Map> channelList = new ArrayList<>(2);
-        Map<String, String> accountMap = new HashMap();
+    public List<SubscribeReq> getBalance(String ccy) {
+        List<SubscribeReq> channelList = new ArrayList<>(2);
+//        Map<String, String> accountMap = new HashMap();
+//
+//        accountMap.put("channel","account");
+//        accountMap.put("ccy", ccy);
+        AccountReq subscribeReq = new AccountReq(ccy,"account");
 
-        accountMap.put("channel","account");
-        accountMap.put("ccy", ccy);
-        channelList.add(accountMap);
-        return formatArgs(channelList);
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override
-    public String getPositions(String instType, String instFamily, String instId) {
-        ArrayList<Map> channelList = new ArrayList<>(2);
-        Map<String, String> positionMap = new HashMap();
+    public List<SubscribeReq> getPositions(String instType, String instFamily, String instId) {
+        List<SubscribeReq> channelList = new ArrayList<>(2);
+//        Map<String, String> positionMap = new HashMap();
 
-        positionMap.put("channel","positions");
-        positionMap.put("instType", instType);
-        if (instFamily != "") {
-            positionMap.put("instFamily", instFamily);
-        }
-        if (instId != "") {
-            positionMap.put("instId", instId);
-        }
-
-        channelList.add(positionMap);
-        return formatArgs(channelList);
+//        positionMap.put("channel","positions");
+//        positionMap.put("instType", instType);
+//        if (instFamily != "") {
+//            positionMap.put("instFamily", instFamily);
+//        }
+//        if (instId != "") {
+//            positionMap.put("instId", instId);
+//        }
+        PositionReq subscribeReq = new PositionReq(instType, instFamily, instId,"positions");
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override
@@ -75,14 +79,14 @@ public class AccountWSServiceImpl implements AccountWSService {
     }
 
     @Override
-    public String getAccountGreeks() {
-        ArrayList<Map> channelList = new ArrayList<>(2);
-        Map<String, String> positionMap = new HashMap();
-
-        positionMap.put("channel","account-greeks");
-
-        channelList.add(positionMap);
-        return formatArgs(channelList);
+    public List<SubscribeReq> getAccountGreeks() {
+        List<SubscribeReq> channelList = new ArrayList<>(2);
+//        Map<String, String> positionMap = new HashMap();
+//
+//        positionMap.put("channel","account-greeks");
+        SubscribeReq subscribeReq = new SubscribeReq("", "account-greeks");
+        channelList.add(subscribeReq);
+        return channelList;
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.okex.open.api.websocket.OkxWsClient;
 import com.okex.open.api.websocket.OkxWssHandler;
 import com.okex.open.api.websocket.old.WebSocketConfig;
 import com.okex.open.api.wsService.accout.Impl.AccountWSServiceImpl;
-import com.okex.open.api.wsService.demoWebSocketListener;
 
 import java.util.List;
 
@@ -44,11 +43,11 @@ public class priDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        getBalance();
+//        getBalance();
 //        getPositions();
 //        getBalAndPos();
 //        getLiquidation();
-//        getAccountGreek();
+        getAccountGreek();
         try {
             Thread.sleep(1000000);
         } catch (Exception e) {
@@ -58,18 +57,18 @@ public class priDemo {
     }
 
     public static void getBalance() {
-//        String ccy = "USDT";
+        String ccy = "USDT";
 //        String args = wsService.getBalance();
 
-        List<SubscribeReq> args = wsService.getBalance();
+        List<SubscribeReq> args = wsService.getBalance(ccy);
 
         client.subscribe(args);
     }
 
-//    public static void getPositions() {
-//        String args = wsService.getPositions("FUTURES", "BTC-USD", "");
-//        client.subscribe(args);
-//    }
+    public static void getPositions() {
+        List<SubscribeReq> args = wsService.getPositions("FUTURES", "BTC-USD", "");
+        client.subscribe(args);
+    }
 
 //    public static void getBalAndPos() {
 //        String args = wsService.getBalanceAndPosition();
@@ -81,12 +80,9 @@ public class priDemo {
 //        client.subscribe(args);
 //    }
 //
-//    public static void getAccountGreek () {
-//        String args = wsService.getAccountGreeks();
-//
-////        String ccy = "BTC";
-////        String args = wsService.getAccountGreeks(ccy);
-//
-//        client.subscribe(args);
-//    }
+    public static void getAccountGreek () {
+        List<SubscribeReq> args = wsService.getAccountGreeks();
+
+        client.subscribe(args);
+    }
 }

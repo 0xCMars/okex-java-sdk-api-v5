@@ -10,10 +10,10 @@ public interface AccountWSService {
     List<SubscribeReq> getBalance();
 
     // Get the balance of one asset in the account
-    String getBalance(String ccy);
+    List<SubscribeReq> getBalance(String ccy);
 
     // Get Positions channel
-    String getPositions(String instType, String instFamily, String instId);
+    List<SubscribeReq> getPositions(String instType, String instFamily, String instId);
 
     // Retrieve account balance and position information.
     String getBalanceAndPosition();
@@ -22,7 +22,7 @@ public interface AccountWSService {
     String getLiquidationWarning(String instType);
 
     // Retrieve account greeks information.
-    String getAccountGreeks();
+    List<SubscribeReq> getAccountGreeks();
 
     String getAccountGreeks(String ccy);
 

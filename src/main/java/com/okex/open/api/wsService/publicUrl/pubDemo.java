@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.okex.open.api.bean.SubscribeReq;
 import com.okex.open.api.websocket.OkxWsClient;
 import com.okex.open.api.websocket.OkxWssHandler;
-import com.okex.open.api.wsService.demoWebSocketListener;
 import com.okex.open.api.wsService.publicUrl.Impl.pubWsServiceImpl;
 
 import java.util.List;
