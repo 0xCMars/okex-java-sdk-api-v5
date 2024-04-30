@@ -3,7 +3,7 @@
 //import com.okex.open.api.websocket.old.OkxWsClientClient;
 //import com.okex.open.api.wsService.accout.Impl.AccountWSServiceImpl;
 //import com.okex.open.api.wsService.demoWebSocketListener;
-//import com.okex.open.api.websocket.old.WebSocketConfig;
+//import com.okex.open.api.websocket.WebSocketListener.WebSocketConfig;
 //public class demoAccount {
 //
 //    private static final demoWebSocketListener demoListener = new demoWebSocketListener();
