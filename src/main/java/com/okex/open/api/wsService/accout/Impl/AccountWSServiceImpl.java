@@ -40,16 +40,7 @@ public class AccountWSServiceImpl implements AccountWSService {
     @Override
     public List<SubscribeReq> getPositions(String instType, String instFamily, String instId) {
         List<SubscribeReq> channelList = new ArrayList<>(2);
-//        Map<String, String> positionMap = new HashMap();
 
-//        positionMap.put("channel","positions");
-//        positionMap.put("instType", instType);
-//        if (instFamily != "") {
-//            positionMap.put("instFamily", instFamily);
-//        }
-//        if (instId != "") {
-//            positionMap.put("instId", instId);
-//        }
         PositionReq subscribeReq = new PositionReq(instType, instFamily, instId,"positions");
         channelList.add(subscribeReq);
         return channelList;

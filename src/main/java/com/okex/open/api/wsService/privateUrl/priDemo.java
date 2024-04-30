@@ -43,11 +43,11 @@ public class priDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        getBalance();
+        getBalance();
 //        getPositions();
 //        getBalAndPos();
 //        getLiquidation();
-        getAccountGreek();
+//        getAccountGreek();
         try {
             Thread.sleep(1000000);
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class priDemo {
     }
 
 //    public static void getBalAndPos() {
-//        String args = wsService.getBalanceAndPosition();
+//        List<SubscribeReq> args = wsService.getBalanceAndPosition();
 //        client.subscribe(args);
 //    }
 //
