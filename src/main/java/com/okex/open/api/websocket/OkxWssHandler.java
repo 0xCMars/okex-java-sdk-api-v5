@@ -320,7 +320,7 @@ public class OkxWssHandler implements OkxWsClient {
             // when onOpen is called, connectStatus will be set to true and finish initClient
             // when reconnecting, it should set to false and wait until onOpen is called.
             connectStatus = false;
-            printLog(builder.apiKey5+" start reconnection ...", "info");
+            printLog(" start reconnection ...", "info");
             // dont need to assign to the websocket two time
             initClient();
             if (CollectionUtils.isNotEmpty(allSuribe)) {

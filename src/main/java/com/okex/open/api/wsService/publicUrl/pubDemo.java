@@ -12,7 +12,7 @@ public class pubDemo {
     private static String Url = "wss://wsaws.okx.com:8443/ws/v5/public";
 
     private static OkxWsClient client;
-    private static final pubWsServiceImpl wsService = new pubWsServiceImpl();
+    private static final pubWsService wsService = new pubWsServiceImpl();
     public static void main(String[] args) {
 
         Boolean isLogin = false;
@@ -36,10 +36,10 @@ public class pubDemo {
                     System.out.println("error:" + json);
                 }).build();
         // ping/pong msg
-//        getTickers();
+        getTickers();
 //        getTrades();
 //        getOrdBooks();
-        getBboTbt();
+//        getBboTbt();
 //        getInstrument();
 //        getMarkPrice();
 //        getOpenInterest();

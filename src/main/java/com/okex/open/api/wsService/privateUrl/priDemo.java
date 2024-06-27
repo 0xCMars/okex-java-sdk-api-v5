@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.okex.open.api.bean.SubscribeReq;
 import com.okex.open.api.websocket.OkxWsClient;
 import com.okex.open.api.websocket.OkxWssHandler;
-import com.okex.open.api.websocket.old.WebSocketConfig;
+import com.okex.open.api.websocket.WebSocketConfig;
 import com.okex.open.api.wsService.accout.Impl.AccountWSServiceImpl;
 
 import java.util.List;
@@ -43,11 +43,11 @@ public class priDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        getBalance();
-//        getPositions();
+        getBalance();
+        getPositions();
 //        getBalAndPos();
 //        getLiquidation();
-        getAccountGreek();
+//        getAccountGreek();
         try {
             Thread.sleep(1000000);
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class priDemo {
     }
 
 //    public static void getBalAndPos() {
-//        String args = wsService.getBalanceAndPosition();
+//        List<SubscribeReq> args = wsService.getBalanceAndPosition();
 //        client.subscribe(args);
 //    }
 //
