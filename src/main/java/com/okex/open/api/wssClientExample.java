@@ -378,49 +378,24 @@ public class wssClientExample {
                     data.getBids().stream().map(x -> new SpotOrderBookItem(new String(x.get(0)), x.get(1), x.get(2), x.get(3)))
                             .collect(Collectors.toList());
 
-            return Optional.of(new SpotOrderBook(asks, bids, data.getTs(),data.getChecksum()));
+            return Optional.of(new SpotOrderBook(asks, bids, data.getTs(),data.getChecksum(), 0));
         } catch (Exception e) {
+            System.out.println(e.toString());
             return Optional.empty();
         }
     }
 
     @Data
-    public final class OrderBookData {
+    public static final class OrderBookData {
         private List<List<String>> asks;
         private List<List<String>> bids;
         private String ts;
         private int checksum;
 
-        public List<List<String>> getAsks() {
-            return asks;
-        }
+        private Long seqId;
 
-        public void setAsks(List<List<String>> asks) {
-            this.asks = asks;
-        }
+        private Long prevSeqId;
 
-        public List<List<String>> getBids() {
-            return bids;
-        }
 
-        public void setBids(List<List<String>> bids) {
-            this.bids = bids;
-        }
-
-        public String getTs() {
-            return ts;
-        }
-
-        public void setTs(String ts) {
-            this.ts = ts;
-        }
-
-        public int getChecksum() {
-            return checksum;
-        }
-
-        public void setChecksum(int checksum) {
-            this.checksum = checksum;
-        }
     }
 }
