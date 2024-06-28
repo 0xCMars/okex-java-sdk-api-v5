@@ -108,96 +108,104 @@ public class wssClientExample {
 
             @Override
             public void onMessage(final WebSocket webSocket, final String byteString) {
-                if(byteString.contains("\"channel\":\"bbo-tbt\",")){ // 10ms 1st level
-                    JSONObject rst = JSONObject.fromObject(byteString);
-                    JSONObject arg = JSONObject.fromObject(rst.get("arg"));
-                    final String instId = arg.getString("instId");
-                    Object dataObj = rst.get("data");
-                    if (dataObj != null) {
-                        net.sf.json.JSONArray dataArr = net.sf.json.JSONArray.fromObject(dataObj);
-                        JSONObject data0 = JSONObject.fromObject(dataArr.get(0));
-                        net.sf.json.JSONArray asksArr = net.sf.json.JSONArray.fromObject(data0.get("asks"));
-                        net.sf.json.JSONArray bidsArr = net.sf.json.JSONArray.fromObject(data0.get("bids"));
-                        final long timenow = System.currentTimeMillis();
-                        final long exchtime = data0.getLong("ts");
-                        final double ask = Double.parseDouble(net.sf.json.JSONArray.fromObject(asksArr.get(0)).get(0).toString());
-                        final double bid = Double.parseDouble(net.sf.json.JSONArray.fromObject(bidsArr.get(0)).get(0).toString());
-                        final double asz = Double.parseDouble(net.sf.json.JSONArray.fromObject(asksArr.get(0)).get(1).toString());
-                        final double bsz = Double.parseDouble(net.sf.json.JSONArray.fromObject(bidsArr.get(0)).get(1).toString());
-
-                        System.out.println(new StringBuilder()
-                                .append("okxSpotOB,").append(instId)
-                                .append(",").append(bsz)
-                                .append(",").append(bid)
-                                .append(",").append(ask)
-                                .append(",").append(asz)
-                                .append(",").append(timenow)
-                                .append(",").append(exchtime).toString());
-                    }
-                }else if (byteString.contains("\"channel\":\"books50-l2-tbt\",")
-                        || byteString.contains("\"channel\":\"books-l2-tbt\",")
-                        || byteString.contains("\"channel\":\"books\",")) {
-                    JSONObject rst = JSONObject.fromObject(byteString);
-                    JSONObject arg =JSONObject.fromObject(rst.get("arg"));
-                    net.sf.json.JSONArray dataArr = net.sf.json.JSONArray.fromObject(rst.get("data"));
-                    JSONObject data = JSONObject.fromObject(dataArr.get(0));
-                    String dataStr = data.toString();
-                    String instrumentId = arg.get("instId").toString();
-                    final long timenow = System.currentTimeMillis();
-                    if (byteString.contains("snapshot")) {
-                        Optional<SpotOrderBook> newBook = parse(dataStr);
-                        bookMap.put(instrumentId, newBook);
-                    } else if (byteString.contains("\"action\":\"update\",")) {//construct
-                        Optional<SpotOrderBook> oldBook = bookMap.get(instrumentId);
-                        Optional<SpotOrderBook> bookIncre = parse(dataStr);
-
-                        SpotOrderBookDiff bookdiff = oldBook.get().diff(bookIncre.get());
-                        System.out.println("name:" + instrumentId + ",merge done! checknum=" + bookdiff.getChecksum() + "newbook=" + bookdiff);
-                        String str = getStr(bookdiff.getAsks(), bookdiff.getBids());
-                        System.out.println("name:" + instrumentId + ",checksum check str=" + str);
-
-                        int checksum = checksum(bookdiff.getAsks(), bookdiff.getBids());
-                        System.out.println("name:" + instrumentId + ",checksum=" + checksum);
-                        boolean flag = checksum == bookdiff.getChecksum() ? true : false;
-                        if (flag) {
-                            System.out.println("name:" + instrumentId + ",checksum res=" + flag);
-                            final Optional<SpotOrderBook> newBook = parse(bookdiff.toString());
-                            bookMap.put(instrumentId, newBook);
-                        } else {
-                            System.out.println("name:" + instrumentId + ",checksum res=" + flag + ",need resub");
-                            String channel = rst.get("table").toString();
-                            String unSubStr = "{\"op\": \"unsubscribe\", \"args\":[\"" + channel + ":" + instrumentId + "\"]}";
-                            System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Send: " + unSubStr);
-                            webSocket.send(unSubStr);
-                            String subStr = "{\"op\": \"subscribe\", \"args\":[\"" + channel + ":" + instrumentId + "\"]}";
-                            System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Send: " + subStr);
-                            webSocket.send(subStr);
-                            System.out.println("name:" + instrumentId + ",resubscribing");
-                        }
-                    }
-                }else if(byteString.contains("\"channel\":\"trades\",")){ // real-time mkt trades
-                    JSONObject rst = JSONObject.fromObject(byteString);
-                    JSONObject arg = JSONObject.fromObject(rst.get("arg"));
-                    final String instId = arg.getString("instId");
-                    final Object dataObj = rst.get("data");
-                    final long timenow = System.currentTimeMillis();
-                    net.sf.json.JSONArray dataArr = net.sf.json.JSONArray.fromObject(dataObj);
-                    dataArr.forEach(childData->{
-                        final JSONObject childDataObj = JSONObject.fromObject(childData);
-                        final long eventtime = childDataObj.getLong("ts");
-                        final double price = childDataObj.getDouble("px");
-                        final double qty = childDataObj.getDouble("sz");
-                    });
-                }else{
+                System.out.println("onMsg="+byteString);
+                try {
                     JSONObject rst = JSONObject.fromObject(byteString);
                     final boolean hasEvent = rst.has("event");
-                    if(hasEvent){
+                    if (hasEvent) {
                         final String eventName = rst.getString("event");
                         if (eventName.equals("login") && rst.getString("code").equals("0")) {
                             loginStatus = true;
                         }
+                        System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Receive: " + byteString);
+                    } else if (byteString.contains("\"channel\":\"bbo-tbt\",")) { // 10ms 1st level
+                        JSONObject arg = JSONObject.fromObject(rst.get("arg"));
+                        final String instId = arg.getString("instId");
+                        Object dataObj = rst.get("data");
+                        if (dataObj != null) {
+                            net.sf.json.JSONArray dataArr = net.sf.json.JSONArray.fromObject(dataObj);
+                            JSONObject data0 = JSONObject.fromObject(dataArr.get(0));
+                            net.sf.json.JSONArray asksArr = net.sf.json.JSONArray.fromObject(data0.get("asks"));
+                            net.sf.json.JSONArray bidsArr = net.sf.json.JSONArray.fromObject(data0.get("bids"));
+                            final long timenow = System.currentTimeMillis();
+                            final long exchtime = data0.getLong("ts");
+                            final double ask = Double.parseDouble(net.sf.json.JSONArray.fromObject(asksArr.get(0)).get(0).toString());
+                            final double bid = Double.parseDouble(net.sf.json.JSONArray.fromObject(bidsArr.get(0)).get(0).toString());
+                            final double asz = Double.parseDouble(net.sf.json.JSONArray.fromObject(asksArr.get(0)).get(1).toString());
+                            final double bsz = Double.parseDouble(net.sf.json.JSONArray.fromObject(bidsArr.get(0)).get(1).toString());
+
+                            System.out.println(new StringBuilder()
+                                    .append("okxSpotOB,").append(instId)
+                                    .append(",").append(bsz)
+                                    .append(",").append(bid)
+                                    .append(",").append(ask)
+                                    .append(",").append(asz)
+                                    .append(",").append(timenow)
+                                    .append(",").append(exchtime).toString());
+                        }
+                    } else if (byteString.contains("\"channel\":\"books50-l2-tbt\",")
+                            || byteString.contains("\"channel\":\"books-l2-tbt\",")
+                            || byteString.contains("\"channel\":\"books\",")) {
+                        // we subscribe to ONLY one of these
+                        // these are all incremental. first msg is a snapshot, then other msgs build on top
+
+                        JSONObject arg = JSONObject.fromObject(rst.get("arg"));
+                        String instrumentId = arg.get("instId").toString();
+
+                        final String action = rst.getString("action");
+                        net.sf.json.JSONArray dataArr = net.sf.json.JSONArray.fromObject(rst.get("data"));
+                        JSONObject data = JSONObject.fromObject(dataArr.get(0));
+                        String dataStr = data.toString();
+                        final long timenow = System.currentTimeMillis();
+                        if (action.equals("snapshot")) {
+                            Optional<SpotOrderBook> newBook = parse(dataStr);
+                            bookMap.put(instrumentId, newBook);
+                        } else if (action.equals("update")) {//construct
+                            Optional<SpotOrderBook> oldBook = bookMap.get(instrumentId);
+                            Optional<SpotOrderBook> bookIncre = parse(dataStr);
+
+                            SpotOrderBookDiff bookdiff = oldBook.get().diff(bookIncre.get());
+                            System.out.println("name:" + instrumentId + ",merge done! checknum=" + bookdiff.getChecksum() + "newbook=" + bookdiff);
+                            String str = getStr(bookdiff.getAsks(), bookdiff.getBids());
+                            System.out.println("name:" + instrumentId + ",checksum check str=" + str);
+
+                            int checksum = checksum(bookdiff.getAsks(), bookdiff.getBids());
+                            System.out.println("name:" + instrumentId + ",checksum=" + checksum);
+                            boolean flag = checksum == bookdiff.getChecksum() ? true : false;
+                            if (flag) {
+                                System.out.println("name:" + instrumentId + ",checksum res=" + flag);
+                                final Optional<SpotOrderBook> newBook = parse(bookdiff.toString());
+                                bookMap.put(instrumentId, newBook);
+                            } else {
+                                System.out.println("name:" + instrumentId + ",checksum res=" + flag + ",need resub");
+                                String channel = rst.get("table").toString();
+                                String unSubStr = "{\"op\": \"unsubscribe\", \"args\":[\"" + channel + ":" + instrumentId + "\"]}";
+                                System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Send: " + unSubStr);
+                                webSocket.send(unSubStr);
+                                String subStr = "{\"op\": \"subscribe\", \"args\":[\"" + channel + ":" + instrumentId + "\"]}";
+                                System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Send: " + subStr);
+                                webSocket.send(subStr);
+                                System.out.println("name:" + instrumentId + ",resubscribing");
+                            }
+                        }
+                    } else if (byteString.contains("\"channel\":\"trades\",")) { // real-time mkt trades
+                        JSONObject arg = JSONObject.fromObject(rst.get("arg"));
+                        final String instId = arg.getString("instId");
+                        final Object dataObj = rst.get("data");
+                        final long timenow = System.currentTimeMillis();
+                        net.sf.json.JSONArray dataArr = net.sf.json.JSONArray.fromObject(dataObj);
+                        dataArr.forEach(childData -> {
+                            final JSONObject childDataObj = JSONObject.fromObject(childData);
+                            final long eventtime = childDataObj.getLong("ts");
+                            final double price = childDataObj.getDouble("px");
+                            final double qty = childDataObj.getDouble("sz");
+                        });
+                    } else {
+                        System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Receive: " + byteString);
                     }
-                    System.out.println(DateFormatUtils.format(new Date(), DateUtils.TIME_STYLE_S4) + " Receive: " + byteString);
+                }catch(Exception e){
+                    System.out.println("onMsg exception="+e);
+                    System.out.println("onMsg="+byteString);
                 }
             }
         });
