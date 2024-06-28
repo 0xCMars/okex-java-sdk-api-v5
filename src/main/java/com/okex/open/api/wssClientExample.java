@@ -163,6 +163,12 @@ public class wssClientExample {
                         } else if (action.equals("update")) {//construct
                             Optional<SpotOrderBook> oldBook = bookMap.get(instrumentId);
                             Optional<SpotOrderBook> bookIncre = parse(dataStr);
+                            System.out.println(oldBook.get().getSeqId());
+                            System.out.println(bookIncre.get().getPrevSeqId());
+
+                            // increment data pre seq id == old book seqid is enough
+                            // seq > prevseq normal / seq = prevseq no new msg / seq < prevseq just reset seq
+                            boolean prevSeq = oldBook.get().getSeqId().equals(bookIncre.get().getPrevSeqId());
 
                             SpotOrderBookDiff bookdiff = oldBook.get().diff(bookIncre.get());
                             System.out.println("name:" + instrumentId + ",merge done! checknum=" + bookdiff.getChecksum() + "newbook=" + bookdiff);
@@ -172,10 +178,15 @@ public class wssClientExample {
                             int checksum = checksum(bookdiff.getAsks(), bookdiff.getBids());
                             System.out.println("name:" + instrumentId + ",checksum=" + checksum);
                             boolean flag = checksum == bookdiff.getChecksum() ? true : false;
-                            if (flag) {
+
+                            if (flag && prevSeq) {
                                 System.out.println("name:" + instrumentId + ",checksum res=" + flag);
-                                final Optional<SpotOrderBook> newBook = parse(bookdiff.toString());
-                                bookMap.put(instrumentId, newBook);
+                                SpotOrderBook newBook = oldBook.get().merge(bookIncre.get().getAsks(), bookIncre.get().getBids());
+                                newBook.setPrevSeqId(bookIncre.get().getPrevSeqId());
+                                newBook.setSeqId(bookIncre.get().getSeqId());
+//                                final Optional<SpotOrderBook> newBook = Optional.of(oldBook.get().merge(bookIncre.get().getAsks(), bookIncre.get().getBids()));
+//                                newBook.get().setPrevSeqId(bookIncre.get().getPrevSeqId());
+                                bookMap.put(instrumentId, Optional.of(newBook));
                             } else {
                                 System.out.println("name:" + instrumentId + ",checksum res=" + flag + ",need resub");
                                 String channel = rst.get("table").toString();
@@ -378,7 +389,7 @@ public class wssClientExample {
                     data.getBids().stream().map(x -> new SpotOrderBookItem(new String(x.get(0)), x.get(1), x.get(2), x.get(3)))
                             .collect(Collectors.toList());
 
-            return Optional.of(new SpotOrderBook(asks, bids, data.getTs(),data.getChecksum(), 0));
+            return Optional.of(new SpotOrderBook(asks, bids, data.getTs(),data.getChecksum(), data.getSeqId(), data.getPrevSeqId()));
         } catch (Exception e) {
             System.out.println(e.toString());
             return Optional.empty();
@@ -395,7 +406,6 @@ public class wssClientExample {
         private Long seqId;
 
         private Long prevSeqId;
-
 
     }
 }
