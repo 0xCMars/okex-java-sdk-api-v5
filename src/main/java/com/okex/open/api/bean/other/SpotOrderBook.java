@@ -87,6 +87,12 @@ public class SpotOrderBook {
         return this;
     }
 
+    // asks and bids should be merged
+    public void update(List<SpotOrderBookItem> asks, List<SpotOrderBookItem> bids) {
+        this.asks = asks;
+        this.bids = bids;
+    }
+
     //深度合并，返回深度合并后的内容current为现有的数据，snapshot为快照增量的数据
     private List<SpotOrderBookItem> diff(final List<SpotOrderBookItem> current, final List<SpotOrderBookItem> snapshot,
         final Comparator<String> comparator,int order) {

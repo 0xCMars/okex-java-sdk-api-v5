@@ -181,12 +181,12 @@ public class wssClientExample {
 
                             if (flag && prevSeq) {
                                 System.out.println("name:" + instrumentId + ",checksum res=" + flag);
-                                SpotOrderBook newBook = oldBook.get().merge(bookIncre.get().getAsks(), bookIncre.get().getBids());
-                                newBook.setPrevSeqId(bookIncre.get().getPrevSeqId());
-                                newBook.setSeqId(bookIncre.get().getSeqId());
+                                oldBook.get().update(bookdiff.getAsks(), bookdiff.getBids());
+                                oldBook.get().setPrevSeqId(bookIncre.get().getPrevSeqId());
+                                oldBook.get().setSeqId(bookIncre.get().getSeqId());
 //                                final Optional<SpotOrderBook> newBook = Optional.of(oldBook.get().merge(bookIncre.get().getAsks(), bookIncre.get().getBids()));
 //                                newBook.get().setPrevSeqId(bookIncre.get().getPrevSeqId());
-                                bookMap.put(instrumentId, Optional.of(newBook));
+                                bookMap.put(instrumentId, oldBook);
                             } else {
                                 System.out.println("name:" + instrumentId + ",checksum res=" + flag + ",need resub");
                                 String channel = rst.get("table").toString();
