@@ -211,7 +211,7 @@ public class WebSocketClient {
                 e.printStackTrace();
             }
 
-            System.out.println("Send a message to the server:" + str);
+            //System.out.println("Send a message to the server:" + str);
             webSocket.send(str);
         } else {
             System.out.println("Please establish the connection before you operate it！");
