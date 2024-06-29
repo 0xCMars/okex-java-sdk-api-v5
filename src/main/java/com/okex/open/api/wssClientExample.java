@@ -389,7 +389,7 @@ public class wssClientExample {
                     data.getBids().stream().map(x -> new SpotOrderBookItem(new String(x.get(0)), x.get(1), x.get(2), x.get(3)))
                             .collect(Collectors.toList());
 
-            return Optional.of(new SpotOrderBook(asks, bids, data.getTs(),data.getChecksum(), 0L, 0L));
+            return Optional.of(new SpotOrderBook(asks, bids, data.getTs(),data.getChecksum(), data.getSeqId(), data.getPrevSeqId()));
         } catch (Exception e) {
             System.out.println(e.toString());
             return Optional.empty();
