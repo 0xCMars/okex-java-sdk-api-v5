@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 public class SpotOrderBook {
 
-
     private List<SpotOrderBookItem> asks;
     private List<SpotOrderBookItem> bids;
     private String ts;
@@ -19,13 +18,24 @@ public class SpotOrderBook {
     private OrderBookDiffer differ = new OrderBookDiffer();
     private OrderBookChecksumer checksumer = new OrderBookChecksumer();
 
+    private Long seqId;
+
+    private Long prevSeqId;
+
     private HashFunction crc32 = Hashing.crc32();
 
-    public SpotOrderBook(List<SpotOrderBookItem> asks, List<SpotOrderBookItem> bids, String ts, int checksum) {
+    public SpotOrderBook(List<SpotOrderBookItem> asks,
+                         List<SpotOrderBookItem> bids,
+                         String ts,
+                         int checksum,
+                         Long seqId,
+                         Long prevSeqId) {
         this.asks = asks;
         this.bids = bids;
         this.ts = ts;
         this.checksum = checksum;
+        this.seqId = seqId;
+        this.prevSeqId = prevSeqId;
     }
 
 
@@ -69,6 +79,18 @@ public class SpotOrderBook {
         final List<SpotOrderBookItem> bidDiff = this.diff(this.getBids(), that.getBids(), Comparator.reverseOrder(),2);
         //根据ask和bid创建合并后的对象
         return new SpotOrderBookDiff(askDiff, bidDiff, that.ts, that.checksum);
+    }
+
+    public SpotOrderBook merge(List<SpotOrderBookItem> asks, List<SpotOrderBookItem> bids) {
+        this.asks = this.diff(this.getAsks(), asks, Comparator.naturalOrder(),1);
+        this.bids = this.diff(this.getBids(), bids, Comparator.reverseOrder(),2);
+        return this;
+    }
+
+    // asks and bids should be merged
+    public void update(List<SpotOrderBookItem> asks, List<SpotOrderBookItem> bids) {
+        this.asks = asks;
+        this.bids = bids;
     }
 
     //深度合并，返回深度合并后的内容current为现有的数据，snapshot为快照增量的数据
