@@ -16,13 +16,14 @@ public class AccountAPIBaseTests extends BaseTests {
     public APIConfiguration config() {
         APIConfiguration config = new APIConfiguration();
 
-        config.setEndpoint("https://www.okex.com/");
+        config.setEndpoint("https://www.okx.com/");
         // apiKey，api注册成功后页面上有
 
 
-        config.setApiKey("62bc24ef-7936-493e-bcab-2baa6d6564d7");
-        config.setSecretKey("C3CB4976543584964EF5A4855FEB0F25");
-        config.setPassphrase("Account98..");
+
+        config.setApiKey("7349788e-3776-4649-9151-4cc8d16afd9b");
+        config.setSecretKey("DFB0CC0AF519D142DA4B1671515BAE13");
+        config.setPassphrase("Qweasdzxc11!");
 
 
         config.setPrint(true);
