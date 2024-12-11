@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: Maven Jar Plugin 3.2.0
+Build-Jdk-Spec: 17
+Specification-Title: okx_client
+Specification-Version: 1.0
+Implementation-Title: okx_client
+Implementation-Version: 1.0.0
+Main-Class: com.okex.open.api.SendOrder
+

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.okcoin.commons</groupId>
-    <artifactId>okex-java-sdk-api</artifactId>
+    <artifactId>okx_client</artifactId>
     <version>1.0.0</version>
 
     <!--<properties>
@@ -320,6 +320,75 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version> <!-- Use the latest stable version -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <mainClass>com.okex.open.api.SendOrder</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+<!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                <archive>
+                    <manifest>
+                    <mainClass>com.okex.open.api.SendOrder</mainClass> 
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>rest</descriptorRef>
+                </descriptorRefs>
+                <source>1.8</source>
+                <target>1.8</target>
+                </configuration>
+                <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                    <goal>single</goal>
+                    </goals>
+                </execution>
+                </executions>
+            </plugin>
+-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                <archive>
+                    <manifest>
+                    <mainClass>com.okex.open.api.SendOrder</mainClass> 
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <source>1.8</source>
+                <target>1.8</target>
+                </configuration>
+                <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                    <goal>single</goal>
+                    </goals>
+                </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
