@@ -20,7 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static net.openhft.affinity.AffinityStrategies.SAME_CORE;
+import static net.openhft.affinity.AffinityStrategies.*;
 
 public class OkxWssAffHandler implements OkxWsClient {
     public static final String WS_OP_LOGIN = "login";
@@ -43,8 +43,8 @@ public class OkxWssAffHandler implements OkxWsClient {
 
     private OkxWssAffHandler(OkxWssAffHandler.OkxClientBuilder builder) {
         this.builder = builder;
-        factory = new AffinityThreadFactory(builder.affThreadName, SAME_CORE);
-        executorService = Executors.newFixedThreadPool(builder.threadNum, factory);
+        factory = new AffinityThreadFactory(builder.affThreadName, SAME_SOCKET); // 建立一个affinity thread factory
+        executorService = Executors.newFixedThreadPool(builder.threadNum, factory); // 建立一个affinity thread pool
 
         // dont need to receive the websocket from initClient,
         // in initClient, webSocket have been update at line67
@@ -59,7 +59,7 @@ public class OkxWssAffHandler implements OkxWsClient {
         if (executorService == null) {
             executorService = Executors.newFixedThreadPool(builder.threadNum, factory);
         }
-        Dispatcher dispatcher = new Dispatcher(executorService);
+        Dispatcher dispatcher = new Dispatcher(executorService); // 使用affinity thread pool作为dispatcher
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
