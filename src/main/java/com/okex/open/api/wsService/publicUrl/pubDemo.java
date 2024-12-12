@@ -3,6 +3,7 @@ package com.okex.open.api.wsService.publicUrl;
 import com.alibaba.fastjson.JSONObject;
 import com.okex.open.api.bean.SubscribeReq;
 import com.okex.open.api.websocket.OkxWsClient;
+import com.okex.open.api.websocket.OkxWssAffHandler;
 import com.okex.open.api.websocket.OkxWssHandler;
 import com.okex.open.api.wsService.publicUrl.Impl.pubWsServiceImpl;
 
@@ -10,18 +11,21 @@ import java.util.List;
 
 public class pubDemo {
     private static String Url = "wss://wsaws.okx.com:8443/ws/v5/public";
+    private static String ColoUrl = "wss://colows3.okx.com/ws/v5/public";
 
     private static OkxWsClient client;
     private static final pubWsService wsService = new pubWsServiceImpl();
     public static void main(String[] args) {
 
         Boolean isLogin = false;
-        client = OkxWssHandler.builder()
+        client = OkxWssAffHandler.builder() // use OkxWssAffHandler instead of OkxWssHandler
                 .pushUrl(Url)
                 .apiKey("")
                 .secretKey("")
                 .passPhrase("")
                 .isLogin(isLogin)
+                .affThreadName("aff okx") // the affinity thread name
+                .threadNum(1) // the num of thread u want to create in affinity thread factory
                 .listener(response -> {
                     JSONObject json = JSONObject.parseObject(response);
                     //System.out.println("def:" + json);
