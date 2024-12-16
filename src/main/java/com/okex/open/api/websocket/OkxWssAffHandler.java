@@ -36,14 +36,16 @@ public class OkxWssAffHandler implements OkxWsClient {
 
     private final Map<SubscribeReq, SubscriptionListener> scribeMap = new ConcurrentHashMap<>();
 
-    private AffinityThreadFactory factory;
+    private CustomAffThreadFactory factory;
     private ExecutorService executorService;
+
+    private Dispatcher dispatcher;
 
     private Set<SubscribeReq> allSuribe = Collections.synchronizedSet(new HashSet<>());
 
     private OkxWssAffHandler(OkxWssAffHandler.OkxClientBuilder builder) {
         this.builder = builder;
-        factory = new AffinityThreadFactory(builder.affThreadName, SAME_SOCKET); // 建立一个affinity thread factory
+        factory = new CustomAffThreadFactory(builder.affThreadName, SAME_SOCKET); // 建立一个affinity thread factory
         executorService = Executors.newFixedThreadPool(builder.threadNum, factory); // 建立一个affinity thread pool
 
         // dont need to receive the websocket from initClient,
@@ -59,7 +61,9 @@ public class OkxWssAffHandler implements OkxWsClient {
         if (executorService == null) {
             executorService = Executors.newFixedThreadPool(builder.threadNum, factory);
         }
-        Dispatcher dispatcher = new Dispatcher(executorService); // 使用affinity thread pool作为dispatcher
+        if (dispatcher == null) {
+            dispatcher = new Dispatcher(executorService); // 使用affinity thread pool作为dispatcher
+        }
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .dispatcher(dispatcher)
@@ -80,8 +84,36 @@ public class OkxWssAffHandler implements OkxWsClient {
         printLog(" start connect ....", "info");
         while (!connectStatus) {
         }
-
         return webSocket;
+    }
+
+    private void reConnect() {
+        reconnectStatus = true;
+        // initClient() have a while loop to check the connectStatus
+        // when onOpen is called, connectStatus will be set to true and finish initClient
+        // when reconnecting, it should set to false and wait until onOpen is called.
+        connectStatus = false;
+        printLog("Dump affinity locks ", "INFO");
+        printLog(AffinityLock.dumpLocks(), "INFO");
+        executorService.shutdownNow();
+        dispatcher.cancelAll();
+        printLog("shutdown", "INFO");
+//            if (this.webSocket != null) {
+//                this.webSocket.close(1024, "close");
+//                this.webSocket = null;
+//            }
+//            executorService.close();
+
+        factory.releaseAll();
+        executorService = null;
+        dispatcher = null;
+        // dont need to assign to the websocket two time
+        printLog(" start reconnection ...", "info");
+
+        initClient();
+        if (CollectionUtils.isNotEmpty(allSuribe)) {
+            subscribe(new ArrayList<>(allSuribe));
+        }
     }
 
     public static OkxWssAffHandler.OkxClientBuilder builder() {
@@ -223,6 +255,8 @@ public class OkxWssAffHandler implements OkxWsClient {
 
         @Override
         public void onFailure(final WebSocket webSocket, final Throwable t, final Response response) {
+            reconnectStatus = false;
+
             String message = "{\"msg\":\"onFailure\", \"apikey5\":\"" + builder.apiKey5 + "\"}";
             if (Objects.nonNull(builder.errorListener)) {
                 builder.errorListener.onReceive(message);
@@ -321,24 +355,6 @@ public class OkxWssAffHandler implements OkxWsClient {
             webSocket.close(1000, "Long time no message was sent or received！");
             webSocket = null;
         }
-
-        private void reConnect() {
-            reconnectStatus = true;
-            // initClient() have a while loop to check the connectStatus
-            // when onOpen is called, connectStatus will be set to true and finish initClient
-            // when reconnecting, it should set to false and wait until onOpen is called.
-            connectStatus = false;
-            printLog("Dump affinity locks ", "INFO");
-            printLog(AffinityLock.dumpLocks(), "INFO");
-            executorService.shutdown();
-            printLog(" start reconnection ...", "info");
-            // dont need to assign to the websocket two time
-            initClient();
-            if (CollectionUtils.isNotEmpty(allSuribe)) {
-                subscribe(new ArrayList<>(allSuribe));
-            }
-        }
-
     }
 
     public static class OkxClientBuilder {
